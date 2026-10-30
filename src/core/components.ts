@@ -46,4 +46,19 @@ export const Tool = createComponent('Tool', {
   archetype: { type: Types.String, default: 'block' },
   behavior: { type: Types.String, default: '' },
   level: { type: Types.Int16, default: 1 },
+  /** Runtime snapshot JSON (vars + running timers) for persistence. */
+  state: { type: Types.String, default: '' },
+  /** Jar contents: comma-separated note priorities, e.g. "0,2,1". */
+  items: { type: Types.String, default: '' },
+});
+
+/** A sticky note. priority 0 = high (red), 1 = medium (amber), 2 = low (green). */
+export const Note = createComponent('Note', {
+  uid: { type: Types.String, default: '' },
+  priority: { type: Types.Int8, default: 1 },
+});
+
+/** Sticky note pad: pinching it peels off a note in the next color. */
+export const NotePad = createComponent('NotePad', {
+  next: { type: Types.Int8, default: 0 },
 });

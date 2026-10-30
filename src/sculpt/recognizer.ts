@@ -62,7 +62,7 @@ export function recognize(primitive: Primitive, p: DeformParams): Recognition {
 export const ARCHETYPE_SHAPES: Record<Archetype, { primitive: Primitive; deform: DeformParams }> = {
   hourglass: { primitive: 'cylinder', deform: { sx: 1, sy: 1.6, sz: 1, waist: 0.7, twist: 0, taper: 0 } },
   lever: { primitive: 'cylinder', deform: { sx: 0.5, sy: 2.4, sz: 0.5, waist: 0, twist: 0, taper: 0.2 } },
-  jar: { primitive: 'cylinder', deform: { sx: 1.9, sy: 1.6, sz: 1.9, waist: 0.1, twist: 0, taper: -0.15 } },
+  jar: { primitive: 'cylinder', deform: { sx: 1.6, sy: 1.35, sz: 1.6, waist: 0.05, twist: 0, taper: 0.1 } },
   dial: { primitive: 'cylinder', deform: { sx: 1.5, sy: 0.45, sz: 1.5, waist: 0, twist: 0.9, taper: 0 } },
   button: { primitive: 'sphere', deform: { sx: 1.1, sy: 0.4, sz: 1.1, waist: 0, twist: 0, taper: 0 } },
   block: { primitive: 'cube', deform: { sx: 1, sy: 1, sz: 1, waist: 0, twist: 0, taper: 0 } },

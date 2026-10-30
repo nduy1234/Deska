@@ -47,3 +47,15 @@ runtime, simulator, templates), `src/persist/model.ts`, `src/agent/repair.ts`.
 8. **M8 Onboarding + polish** — 60 s flow, perf pass on Quest, a11y check.
 9. **M9 Ship** — README, Vercel deploy, demo script, tagline, description.
 10. **Stretch** — passthrough MR mode on real table.
+
+## One-handed accessibility check (dev)
+
+Every starter tool works with a single hand, checked in IWER using only `hand-right`:
+
+| Tool | One-hand interaction |
+|---|---|
+| Hourglass | pinch, turn the wrist over, release (flip); fingertip poke pauses |
+| Jar | pinch a note off the pad, release over the jar; pinch-tap the jar to sort |
+| Lever | pinch the top, pull toward you |
+| Dial | pinch, turn the wrist like a knob |
+| Sculpting | squeeze is already one-handed; `?onehand=1` makes a single pinch stretch and twist against the desk |

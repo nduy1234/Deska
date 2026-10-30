@@ -14,7 +14,8 @@ import {
 import { sfx } from '../feedback/sfx.js';
 import type { Primitive } from '../sculpt/deform.js';
 import { createClayMesh } from './clay.js';
-import { Clay, TraySlot } from './components.js';
+import { Clay, NotePad, TraySlot } from './components.js';
+import { createPadObject } from './notes.js';
 import { hands } from './hands.js';
 
 /**
@@ -30,6 +31,7 @@ export const DESK = {
   inFront: 0.36,
   tray: { x: 0, z: -0.17, width: 0.44, depth: 0.11 },
   traySlotSpacing: 0.13,
+  pad: { x: 0.3, z: 0.1 },
 } as const;
 
 /** Shared desk handle so systems can parent and convert into desk space. */
@@ -129,6 +131,13 @@ export class DeskSystem extends createSystem({
     }
 
     this.trayPrimitives.forEach((p, i) => this.addTraySlot(p, i));
+
+    // Sticky note pad, front right: pinch to peel off a note.
+    const pad = createPadObject();
+    pad.position.set(DESK.pad.x, 0, DESK.pad.z);
+    this.world
+      .createTransformEntity(pad, { parent: root, persistent: true })
+      .addComponent(NotePad, { next: 0 });
 
     // Desktop / emulator before entering XR: anchor to the configured camera.
     this.anchor();
