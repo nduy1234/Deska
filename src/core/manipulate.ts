@@ -22,7 +22,7 @@ import { hands, otherSide, SIDES, type HandState, type Side } from './hands.js';
 /** Extra reach around an object that still counts as pinching it. */
 export const PINCH_SLOP = 0.035;
 const SETTLE_TIME = 0.22;
-const SQUEEZE_RATE = 0.9;
+const SQUEEZE_RATE = 0.6;
 
 interface Grip {
   entity: Entity;
@@ -399,7 +399,7 @@ export class ManipulateSystem extends createSystem({
 
   private wrapped(h: HandState): Entity | null {
     const group = desk.group!;
-    this.v.copy(h.palmCenter);
+    this.v.copy(h.graspPoint);
     group.worldToLocal(this.v);
     for (const e of this.queries.clay.entities) {
       if (e.hasComponent(TraySlot) || e.hasComponent(Tool)) continue;

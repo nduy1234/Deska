@@ -30,6 +30,8 @@ export interface HandState {
   pinchPoint: Vector3;
   indexTip: Vector3;
   palmCenter: Vector3;
+  /** Center of the space the hand closes around (palm + fingertips). */
+  graspPoint: Vector3;
   /** World-space unit vector out of the palm. */
   palmNormal: Vector3;
   /** Wrist orientation in world space. */
@@ -51,6 +53,7 @@ function makeHand(side: Side): HandState {
     pinchPoint: new Vector3(),
     indexTip: new Vector3(),
     palmCenter: new Vector3(),
+    graspPoint: new Vector3(),
     palmNormal: new Vector3(0, 1, 0),
     rotation: new Quaternion(),
     velocity: new Vector3(),
@@ -110,10 +113,15 @@ export class HandSystem extends createSystem({}) {
             .multiplyScalar(PALM_AXIS_SIGN);
           this.jointMat.decompose(this.tmp2, h.rotation, this.tmp);
 
+          // Grasp point: centroid of palm, thumb, index and middle tips.
+          this.joint(joints, J_THUMB_TIP, this.tmp);
+          h.graspPoint.copy(h.palmCenter).add(this.tmp).add(h.indexTip);
+          h.graspPoint.add(this.joint(joints, J_MIDDLE_TIP, this.tmp2)).multiplyScalar(0.25);
+
           // Curl: fingertips pulled in toward the wrist.
           this.joint(joints, J_WRIST, this.tmp);
           let d = 0;
-          d += this.joint(joints, J_MIDDLE_TIP, this.tmp2).distanceTo(this.tmp);
+          d += this.tmp2.distanceTo(this.tmp);
           d += this.joint(joints, J_RING_TIP, this.tmp2).distanceTo(this.tmp);
           d /= 2;
           h.curl = Math.max(0, Math.min(1, (0.16 - d) / 0.075));
@@ -127,6 +135,7 @@ export class HandSystem extends createSystem({}) {
         h.pinchPoint.setFromMatrixPosition(space.matrixWorld);
         h.indexTip.copy(h.pinchPoint);
         h.palmCenter.copy(h.pinchPoint);
+        h.graspPoint.copy(h.pinchPoint);
         space.getWorldQuaternion(h.rotation);
         h.palmNormal.set(0, -1, 0).applyQuaternion(h.rotation);
         h.pinchStrength = select.active ? 1 : 0;
