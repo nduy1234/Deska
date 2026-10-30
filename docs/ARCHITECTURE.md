@@ -37,6 +37,8 @@ runtime, simulator, templates), `src/persist/model.ts`, `src/agent/repair.ts`.
 
 ## Milestones (each = small commits, verified in IWER)
 
+Status: M1–M9 done and verified in the IWER emulator; on-device Quest pass and the passthrough stretch goal remain.
+
 1. **M1 Desk + tray** — room, desk at seated height, tray (cube/cylinder/sphere), pinch-pull a primitive onto the desk, move it, recenter gesture, sounds.
 2. **M2 Sculpting** — two-hand stretch per axis, squeeze waist, twist, clay geometry deform.
 3. **M3 Recognizer** — archetype lock-in, glow + label.
