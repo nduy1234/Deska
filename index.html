@@ -1,16 +1,37 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="Deska: sculpt clay into working productivity tools with your hands in VR." />
+    <meta name="theme-color" content="#3c2c20" />
     <link rel="icon" href="data:," />
     <title>Deska</title>
+    <style>
+      body { margin: 0; background: #e9dccb; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; }
+      #enter {
+        position: fixed; left: 50%; bottom: 8vh; transform: translateX(-50%);
+        display: flex; flex-direction: column; align-items: center; gap: 10px;
+        padding: 18px 26px; border-radius: 22px; color: #fff6ea;
+        background: rgba(60, 44, 32, 0.86); text-align: center; max-width: 86vw;
+      }
+      #enter h1 { margin: 0; font-size: 28px; letter-spacing: 0.5px; }
+      #enter p { margin: 0; font-size: 15px; opacity: 0.85; }
+      #enter button {
+        font: 600 18px system-ui, sans-serif; color: #3c2c20; background: #ffcf8a;
+        border: 0; border-radius: 999px; padding: 12px 28px; cursor: pointer;
+      }
+      #enter button[hidden] { display: none; }
+      #enter.gone { display: none; }
+    </style>
   </head>
-  <body style="margin: 0">
+  <body>
     <div id="scene-container"></div>
+    <div id="enter">
+      <h1>Deska</h1>
+      <p id="enter-hint">Sculpt clay into tools that work. Hands only, seated.</p>
+      <button id="enter-button" hidden>Enter Deska</button>
+    </div>
     <script type="module" src="/src/index.ts"></script>
   </body>
 </html>

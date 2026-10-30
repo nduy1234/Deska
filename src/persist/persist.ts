@@ -86,12 +86,16 @@ export class PersistSystem extends createSystem({
     if (firstEver) this.starterDesk();
     dimRoom(r.snapshot.roomLevel ?? 0);
     deskState.loaded = true;
+    // Cold-start budget is 5 s to a usable desk; logged for the perf check.
+    const ms = Math.round(performance.now());
+    (window as unknown as { __deskaReadyMs?: number }).__deskaReadyMs = ms;
+    console.info(`[deska] desk ready in ${ms} ms`);
     await this.saveNow();
   }
 
   /** First ever visit: two ready-made tools; the hourglass is yours to sculpt. */
   private starterDesk(): void {
-    spawnTool(this.world, 'jar', behaviorFor('jar', 1), new Vector3(-0.3, 0, 0.0));
+    spawnTool(this.world, 'jar', behaviorFor('jar', 1), new Vector3(-0.28, 0, 0.1));
     spawnTool(this.world, 'lever', behaviorFor('lever', 1), new Vector3(0.24, 0, -0.04));
   }
 

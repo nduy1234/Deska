@@ -44,3 +44,4 @@ pids/
 .vscode/mcp.json
 .codex/config.toml
 scripts/.eval.txt
+.playwright-mcp/

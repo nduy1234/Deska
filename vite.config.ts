@@ -73,6 +73,8 @@ export default defineConfig({
     ],
     esbuildOptions: { target: 'esnext' },
   },
+  // Inline styles only; never pick up a postcss.config from parent folders.
+  css: { postcss: {} },
   publicDir: 'public',
   base: './',
 });

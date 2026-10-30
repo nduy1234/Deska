@@ -27,8 +27,15 @@ function audio(): AudioContext | null {
 /** Browsers start audio suspended until a user gesture; call on any input. */
 export function unlockAudio(): void {
   const a = audio();
-  if (a && a.state === 'suspended') void a.resume();
+  if (a && a.state === 'suspended') {
+    void a.resume().then(() => {
+      // Start the soft room bed once sound is allowed.
+      if (!ambient) setAmbient(ambientLevel);
+    });
+  }
 }
+
+let ambientLevel = 0;
 
 function tone(
   freq: number,
@@ -144,6 +151,7 @@ export function setAmbient(level: number): void {
   }
   const t = a.currentTime;
   const l = Math.max(0, Math.min(1, level));
+  ambientLevel = l;
   ambient.gain.gain.setTargetAtTime(0.04 + 0.1 * l, t, 0.4);
   ambient.filter.frequency.setTargetAtTime(1600 - 1200 * l, t, 0.4);
 }
