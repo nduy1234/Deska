@@ -13,7 +13,9 @@ import {
 } from '@iwsdk/core';
 import { BehaviorRuntime, type BlockHost, type TriggerEvent } from '../blocks/runtime.js';
 import type { BehaviorGraph, SoundName } from '../blocks/schema.js';
-import { DEFAULT_BEHAVIORS } from '../blocks/templates.js';
+import { behaviorFor, DEFAULT_BEHAVIORS } from '../blocks/templates.js';
+import { toolLevel } from '../persist/model.js';
+import { deskState } from '../persist/state.js';
 import { validateBehavior } from '../blocks/validate.js';
 import { clayMesh, createClayMesh, readDeform, writeDeform } from '../core/clay.js';
 import { Clay, Held, Note, Tool, TraySlot } from '../core/components.js';
@@ -298,9 +300,11 @@ export class ToolSystem extends createSystem({
   lockIn(entity: Entity, archetype: Archetype): void {
     entity.setValue(Clay, 'archetype', archetype);
     this.pendingLock.add(entity);
+    const level = toolLevel(deskState.snapshot, archetype);
     entity.addComponent(Tool, {
       archetype,
-      behavior: JSON.stringify(DEFAULT_BEHAVIORS[archetype]),
+      level,
+      behavior: JSON.stringify(behaviorFor(archetype, level)),
     });
     const t = this.live.get(entity);
     if (t && this.pendingLock.delete(entity)) {

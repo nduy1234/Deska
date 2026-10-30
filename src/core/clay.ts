@@ -2,6 +2,7 @@ import {
   BoxGeometry,
   BufferAttribute,
   BufferGeometry,
+  CapsuleGeometry,
   Color,
   createSystem,
   CylinderGeometry,
@@ -23,6 +24,8 @@ export const CLAY_COLORS: Record<Primitive, string> = {
   cube: '#d9896a',
   cylinder: '#9db896',
   sphere: '#8db0d6',
+  cone: '#c9a3d4',
+  capsule: '#e3b866',
 };
 
 const baseCache = new Map<Primitive, BufferGeometry>();
@@ -33,6 +36,8 @@ function baseGeometry(primitive: Primitive): BufferGeometry {
   if (g) return g;
   if (primitive === 'cube') g = new BoxGeometry(1, 1, 1, 3, 14, 3);
   else if (primitive === 'cylinder') g = new CylinderGeometry(0.5, 0.5, 1, 28, 14);
+  else if (primitive === 'cone') g = new CylinderGeometry(0.12, 0.5, 1, 28, 14);
+  else if (primitive === 'capsule') g = new CapsuleGeometry(0.3, 0.4, 6, 24);
   else g = new SphereGeometry(0.5, 28, 18);
   baseCache.set(primitive, g);
   return g;

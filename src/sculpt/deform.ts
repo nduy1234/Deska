@@ -7,7 +7,7 @@
  * mesh is always rebuilt from it, never edited freeform.
  */
 
-export type Primitive = 'cube' | 'cylinder' | 'sphere';
+export type Primitive = 'cube' | 'cylinder' | 'sphere' | 'cone' | 'capsule';
 
 export interface DeformParams {
   /** Per-axis stretch, 1 = base size. */

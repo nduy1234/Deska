@@ -6,6 +6,9 @@ import { hands, HandSystem } from './core/hands.js';
 import { manipulation, ManipulateSystem } from './core/manipulate.js';
 import { unlockAudio } from './feedback/sfx.js';
 import { DEFAULT_BEHAVIORS } from './blocks/templates.js';
+import { GrowthSystem } from './persist/growth.js';
+import { PersistSystem } from './persist/persist.js';
+import { deskState } from './persist/state.js';
 import type { Archetype } from './sculpt/recognizer.js';
 import { spawnTool, ToolSystem } from './tools/tools.js';
 
@@ -18,6 +21,8 @@ World.create(
     .registerSystem(DeskSystem, { priority: 1 })
     .registerSystem(ManipulateSystem, { priority: 10 })
     .registerSystem(ToolSystem, { priority: 15 })
+    .registerSystem(GrowthSystem, { priority: 25 })
+    .registerSystem(PersistSystem, { priority: 30 })
     .registerSystem(ClaySystem, { priority: 20 });
 
   // Accessibility: ?onehand=1 lets a single pinch sculpt against the desk.
@@ -29,6 +34,7 @@ World.create(
       world,
       desk,
       hands,
+      deskState,
       spawn: (a: Archetype, x: number, z: number) =>
         spawnTool(world, a, DEFAULT_BEHAVIORS[a], new Vector3(x, 0, z)).index,
     };

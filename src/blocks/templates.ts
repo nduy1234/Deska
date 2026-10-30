@@ -253,3 +253,118 @@ export function closestTemplate(intent: string): IntentTemplate {
   }
   return best;
 }
+
+/** Daily-growth upgrades: level 2 behaviors that replace the defaults. */
+export const UPGRADED_BEHAVIORS: Partial<Record<Archetype, Record<number, BehaviorGraph>>> = {
+  hourglass: {
+    2: {
+      version: 1,
+      name: 'Focus hourglass II',
+      vars: { minutes: 25, breakMinutes: 5, sessions: 0 },
+      rules: [
+        {
+          when: { on: 'flip' },
+          do: [
+            { do: 'startTimer', timer: 'focus', minutes: { var: 'minutes' } },
+            { do: 'stopTimer', timer: 'break' },
+            { do: 'dimRoom', level: 0.35 },
+            { do: 'playSound', sound: 'tap' },
+            { do: 'showText', text: 'Focus · {minutes} min', seconds: 3 },
+          ],
+        },
+        {
+          when: { on: 'poke' },
+          do: [
+            { do: 'stopTimer', timer: 'focus' },
+            { do: 'stopTimer', timer: 'break' },
+            { do: 'showText', text: 'Paused', seconds: 2 },
+          ],
+        },
+        {
+          when: { on: 'timerEnd', timer: 'focus' },
+          do: [
+            { do: 'playSound', sound: 'chime' },
+            { do: 'setValue', var: 'sessions', add: 1 },
+            { do: 'dimRoom', level: 0 },
+            { do: 'startTimer', timer: 'break', minutes: { var: 'breakMinutes' } },
+            { do: 'showText', text: 'Break · {sessions} done today', seconds: 6 },
+          ],
+        },
+        {
+          when: { on: 'timerEnd', timer: 'break' },
+          do: [
+            { do: 'playSound', sound: 'chime' },
+            { do: 'showText', text: 'Flip me for another round', seconds: 6 },
+          ],
+        },
+      ],
+    },
+  },
+  dial: {
+    2: {
+      version: 1,
+      name: 'Focus dial II',
+      vars: { focus: 0.3 },
+      rules: [
+        {
+          when: { on: 'turn', step: 6 },
+          do: [
+            { do: 'setValue', var: 'focus', value: { event: 'value' } },
+            { do: 'dimRoom', level: { var: 'focus' } },
+            { do: 'playSound', sound: 'detent' },
+            { do: 'showText', text: 'Focus {focus%}', seconds: 1.5 },
+          ],
+        },
+        {
+          when: { on: 'turn', step: 6 },
+          if: { var: 'focus', op: 'ge', value: 0.6 },
+          do: [{ do: 'setColor', color: '#e3a06e' }],
+        },
+        {
+          when: { on: 'turn', step: 6 },
+          if: { var: 'focus', op: 'lt', value: 0.6 },
+          do: [{ do: 'setColor', color: '#9db896' }],
+        },
+      ],
+    },
+  },
+  jar: {
+    2: {
+      version: 1,
+      name: 'Notes jar II',
+      vars: { count: 0 },
+      rules: [
+        {
+          when: { on: 'drop', item: 'note' },
+          do: [
+            { do: 'setValue', var: 'count', value: { event: 'count' } },
+            { do: 'playSound', sound: 'place' },
+            { do: 'showText', text: '{count} notes', seconds: 2 },
+          ],
+        },
+        {
+          when: { on: 'drop', item: 'note' },
+          if: { var: 'count', op: 'ge', value: 5 },
+          do: [{ do: 'showText', text: 'Getting full · tap to sort', seconds: 3 }],
+        },
+        {
+          when: { on: 'poke' },
+          do: [
+            { do: 'sortItems', by: 'priority' },
+            { do: 'playSound', sound: 'sparkle' },
+            { do: 'showText', text: 'Red first · {count} notes', seconds: 2.5 },
+          ],
+        },
+      ],
+    },
+  },
+};
+
+/** The behavior a fresh tool of this archetype gets at a growth level. */
+export function behaviorFor(archetype: Archetype, level: number): BehaviorGraph {
+  for (let l = level; l >= 2; l--) {
+    const g = UPGRADED_BEHAVIORS[archetype]?.[l];
+    if (g) return g;
+  }
+  return DEFAULT_BEHAVIORS[archetype];
+}

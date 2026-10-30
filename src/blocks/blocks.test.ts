@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { ARCHETYPES } from '../sculpt/recognizer.js';
 import { BehaviorRuntime, type BlockHost } from './runtime.js';
 import { simulate } from './simulate.js';
-import { closestTemplate, DEFAULT_BEHAVIORS, INTENT_TEMPLATES } from './templates.js';
+import { closestTemplate, DEFAULT_BEHAVIORS, INTENT_TEMPLATES, UPGRADED_BEHAVIORS } from './templates.js';
 import { validateBehavior } from './validate.js';
 
 function recorder() {
@@ -24,6 +24,12 @@ describe('validator', () => {
   it('accepts every default and template behavior', () => {
     for (const a of ARCHETYPES) expect(validateBehavior(DEFAULT_BEHAVIORS[a]).errors, a).toEqual([]);
     for (const t of INTENT_TEMPLATES) expect(validateBehavior(t.behavior).errors, t.id).toEqual([]);
+    for (const [a, levels] of Object.entries(UPGRADED_BEHAVIORS)) {
+      for (const g of Object.values(levels ?? {})) {
+        expect(validateBehavior(g).errors, a).toEqual([]);
+        expect(simulate(g).pass, a).toBe(true);
+      }
+    }
   });
 
   it('rejects unknown keys, triggers, actions and code-like payloads', () => {

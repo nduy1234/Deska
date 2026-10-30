@@ -41,7 +41,8 @@ export const desk: {
   anchored: boolean;
   /** 0..1 progress of the palms-up recenter gesture. */
   recenterProgress: number;
-} = { root: null, group: null, anchored: false, recenterProgress: 0 };
+  setTray: (primitives: Primitive[]) => void;
+} = { root: null, group: null, anchored: false, recenterProgress: 0, setTray: () => {} };
 
 export function isOverTray(local: Vector3): boolean {
   const t = DESK.tray;
@@ -74,7 +75,6 @@ export class DeskSystem extends createSystem({
   private q = new Quaternion();
   private recenterHeld = 0;
   private recenterLatched = false;
-  private trayPrimitives: Primitive[] = ['cube', 'cylinder', 'sphere'];
 
   init(): void {
     const group = new Group();
@@ -130,7 +130,8 @@ export class DeskSystem extends createSystem({
       group.add(rim);
     }
 
-    this.trayPrimitives.forEach((p, i) => this.addTraySlot(p, i));
+    desk.setTray = (primitives) => this.setTray(primitives);
+    this.setTray(['cube', 'cylinder', 'sphere']);
 
     // Sticky note pad, front right: pinch to peel off a note.
     const pad = createPadObject();
@@ -149,17 +150,20 @@ export class DeskSystem extends createSystem({
     );
   }
 
-  /** Adds a tray slot (also used by the daily "desk grows" unlocks). */
-  addTraySlot(primitive: Primitive, index: number): Entity {
-    const mesh = createClayMesh(primitive);
-    const n = Math.max(3, index + 1);
-    const x = DESK.tray.x + (index - (n - 1) / 2) * DESK.traySlotSpacing;
-    mesh.position.set(x, 0.01 + 0.04 * 0.75, DESK.tray.z);
-    mesh.scale.setScalar(0.75);
-    const e = this.world.createTransformEntity(mesh, { parent: desk.root!, persistent: true });
-    e.addComponent(TraySlot, { primitive });
-    e.addComponent(Clay, { primitive, uid: `tray-${primitive}` });
-    return e;
+  /** Lay out the tray with these primitives (grows with daily unlocks). */
+  setTray(primitives: Primitive[]): void {
+    for (const e of Array.from(this.queries.slots.entities)) e.dispose();
+    const n = primitives.length;
+    const spacing = n > 1 ? Math.min(DESK.traySlotSpacing, (DESK.tray.width - 0.07) / (n - 1)) : 0;
+    const scale = n > 3 ? 0.65 : 0.75;
+    primitives.forEach((primitive, i) => {
+      const mesh = createClayMesh(primitive);
+      mesh.position.set(DESK.tray.x + (i - (n - 1) / 2) * spacing, 0.01 + 0.04 * scale, DESK.tray.z);
+      mesh.scale.setScalar(scale);
+      const e = this.world.createTransformEntity(mesh, { parent: desk.root!, persistent: true });
+      e.addComponent(TraySlot, { primitive });
+      e.addComponent(Clay, { primitive, uid: `tray-${primitive}` });
+    });
   }
 
   /** Place the desk at seated height in front of the current head pose. */
