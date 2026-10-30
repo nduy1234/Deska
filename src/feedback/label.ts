@@ -70,7 +70,7 @@ export class Label {
     c.font = `600 ${quiet ? 54 : 60}px system-ui, -apple-system, "Segoe UI", sans-serif`;
     const tw = Math.min(W - 16, c.measureText(text).width + 64);
     const x = (W - tw) / 2;
-    c.fillStyle = quiet ? 'rgba(60, 44, 32, 0.55)' : 'rgba(60, 44, 32, 0.82)';
+    c.fillStyle = quiet ? 'rgba(60, 44, 32, 0.7)' : 'rgba(60, 44, 32, 0.85)';
     c.beginPath();
     c.roundRect(x, 14, tw, H - 28, (H - 28) / 2);
     c.fill();

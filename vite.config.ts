@@ -6,10 +6,43 @@
  */
 
 import { iwsdkDev } from '@iwsdk/vite-plugin-dev';
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv, type Plugin } from 'vite';
+
+/**
+ * Serves /api/make-tool during development with the same handler the
+ * Vercel Function uses, reading LLM_* vars from .env.local.
+ */
+function devApi(): Plugin {
+  return {
+    name: 'deska-dev-api',
+    configureServer(server) {
+      server.middlewares.use('/api/make-tool', async (req, res) => {
+        if (req.method !== 'POST') {
+          res.statusCode = 405;
+          res.end();
+          return;
+        }
+        let raw = '';
+        for await (const chunk of req) raw += chunk;
+        let body: Record<string, unknown> = {};
+        try {
+          body = JSON.parse(raw);
+        } catch {
+          /* handled as missing intent */
+        }
+        const { handleMakeTool } = await server.ssrLoadModule('/server/makeTool.ts');
+        const env = loadEnv(server.config.mode, process.cwd(), '');
+        const result = await handleMakeTool(body, env, fetch);
+        res.statusCode = result.status;
+        res.setHeader('content-type', 'application/json');
+        res.end(JSON.stringify(result.json));
+      });
+    },
+  };
+}
 
 export default defineConfig({
-  plugins: [iwsdkDev()],
+  plugins: [iwsdkDev(), devApi()],
   server: { host: '0.0.0.0', port: 8081, open: false },
   build: {
     outDir: 'dist',

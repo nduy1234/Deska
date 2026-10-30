@@ -5,6 +5,7 @@ import { desk, DeskSystem } from './core/desk.js';
 import { hands, HandSystem } from './core/hands.js';
 import { manipulation, ManipulateSystem } from './core/manipulate.js';
 import { unlockAudio } from './feedback/sfx.js';
+import { AgentSystem } from './agent/agent.js';
 import { DEFAULT_BEHAVIORS } from './blocks/templates.js';
 import { GrowthSystem } from './persist/growth.js';
 import { PersistSystem } from './persist/persist.js';
@@ -21,6 +22,7 @@ World.create(
     .registerSystem(DeskSystem, { priority: 1 })
     .registerSystem(ManipulateSystem, { priority: 10 })
     .registerSystem(ToolSystem, { priority: 15 })
+    .registerSystem(AgentSystem, { priority: 22 })
     .registerSystem(GrowthSystem, { priority: 25 })
     .registerSystem(PersistSystem, { priority: 30 })
     .registerSystem(ClaySystem, { priority: 20 });
@@ -35,6 +37,7 @@ World.create(
       desk,
       hands,
       deskState,
+      agent: world.getSystem(AgentSystem),
       spawn: (a: Archetype, x: number, z: number) =>
         spawnTool(world, a, DEFAULT_BEHAVIORS[a], new Vector3(x, 0, z)).index,
     };

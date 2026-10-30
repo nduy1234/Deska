@@ -7,8 +7,8 @@ export default async function run({ page, frame, workspaceRoot }) {
   const expr = readFileSync(join(workspaceRoot, 'scripts', '.eval.txt'), 'utf8');
   const target = frame ?? page;
   const result = await target.evaluate(
-    (src) => {
-      const v = (0, eval)(src);
+    async (src) => {
+      const v = await (0, eval)(src);
       return JSON.parse(JSON.stringify(v, (k, x) => (typeof x === 'number' ? Math.round(x * 1000) / 1000 : x)));
     },
     expr,
