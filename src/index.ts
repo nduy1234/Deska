@@ -1,8 +1,9 @@
-import { Vector3, VisibilityState, World } from '@iwsdk/core';
+import { SessionMode, Vector3, VisibilityState, World } from '@iwsdk/core';
 import projectOptions from 'virtual:iwsdk-project';
 import { ClaySystem } from './core/clay.js';
 import { desk, DeskSystem } from './core/desk.js';
 import { hands, HandSystem } from './core/hands.js';
+import { PassthroughSystem } from './core/passthrough.js';
 import { manipulation, ManipulateSystem } from './core/manipulate.js';
 import { unlockAudio } from './feedback/sfx.js';
 import { AgentSystem } from './agent/agent.js';
@@ -21,6 +22,7 @@ World.create(
   world
     .registerSystem(HandSystem, { priority: 0 })
     .registerSystem(DeskSystem, { priority: 1 })
+    .registerSystem(PassthroughSystem, { priority: 2 })
     .registerSystem(ManipulateSystem, { priority: 10 })
     .registerSystem(ToolSystem, { priority: 15 })
     .registerSystem(AgentSystem, { priority: 22 })
@@ -40,6 +42,15 @@ World.create(
   button?.addEventListener('click', () => {
     unlockAudio();
     world.launchXR();
+  });
+  // Stretch: passthrough mode puts the desk on your real table.
+  const mr = document.getElementById('enter-mr');
+  void navigator.xr?.isSessionSupported('immersive-ar').then((ok) => {
+    if (ok && mr) mr.hidden = false;
+  });
+  mr?.addEventListener('click', () => {
+    unlockAudio();
+    world.launchXR({ sessionMode: SessionMode.ImmersiveAR });
   });
   world.visibilityState.subscribe((state) => {
     card?.classList.toggle('gone', state !== VisibilityState.NonImmersive);
